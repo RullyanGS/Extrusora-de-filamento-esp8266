@@ -1,15 +1,14 @@
-#include <Thermistor.h> //INCLUSÃO DA BIBLIOTECA
+#include <Thermistor.h> 
 #include <PID_v1.h>
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
 
-// Connections to A4988
-const int PinoDir = 12;  // Direction D6
-const int PinoStep = 13; // Step      D7
-// Motor steps per rotation
+// A4988
+const int PinoDir = 12;  // Dir		D6
+const int PinoStep = 13; // Step	D7
 const int STEPS = 200;
 
-LiquidCrystal_I2C lcd(0x27,2,1,0,4,5,6,7,3, POSITIVE);  // set the LCD address for a 16x2 line display
+LiquidCrystal_I2C lcd(0x27,2,1,0,4,5,6,7,3, POSITIVE);
 double DefinirTemp, DefinirVelocidade, TempAtual, Output;
 
 int s0 = 2; //D4
@@ -18,28 +17,24 @@ int s2 = 16; //D0
 int PinoAquecedor = 14; //D5
 
 // OPÇÃO CONTROLE TEMPERATURA 1
-//Thermistor temp(A0); //VARIÁVEL DO TIPO THERMISTOR, INDICANDO O PINO ANALÓGICO (A2) EM QUE O TERMISTOR ESTÁ CONECTADO
 
+//Thermistor temp(A0); // VARIÁVEL DO TIPO THERMISTOR, INDICANDO O PINO ANALÓGICO (A2) EM QUE O TERMISTOR ESTÁ CONECTADO
 int PinoAnalogico = A0;
-
-//Specify the links and initial tuning parameters
 PID myPID(&TempAtual, &Output, &DefinirTemp,2,5,1, DIRECT);
-
-//the time we give the sensor to calibrate (10-30 secs according to the datasheet)
 int calibrationTime = 10; 
 
 // OPÇÃO CONTROLE TEMPERATURA 2 
+
 double Thermister(int RawADC) {
  double Temp;
  Temp = log(((10240000/RawADC) - 10000));
  Temp = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * Temp * Temp ))* Temp );
- Temp = Temp - 273.15;            // Convert Kelvin to Celcius
- //Temp = (Temp * 9.0)/ 5.0 + 32.0; // Convert Celcius to Fahrenheit
+ Temp = Temp - 273.15;            
+ //Temp = (Temp * 9.0)/ 5.0 + 32.0; 
  return Temp;
 }
 
 void setup() {
-  // Setup the pins as Outputs
   pinMode(PinoStep,OUTPUT); 
   pinMode(PinoDir,OUTPUT);
   
@@ -51,7 +46,6 @@ void setup() {
   lcd.begin (16,2);
   lcd.clear();
   
-  //give the sensor some time to calibrate
   Serial.print("calibrando sensor ");
   lcd.setCursor(0,0);
   lcd.print("calibrando...");
